@@ -48,6 +48,7 @@ option(CXXOPTS_BUILD_TESTS "Set to ON to build tests" ${CXXOPTS_STANDALONE_PROJE
 option(CXXOPTS_ENABLE_INSTALL "Generate the install target" ${CXXOPTS_STANDALONE_PROJECT})
 option(CXXOPTS_ENABLE_WARNINGS "Add warnings to CMAKE_CXX_FLAGS" ${CXXOPTS_STANDALONE_PROJECT})
 option(CXXOPTS_USE_UNICODE_HELP "Use ICU Unicode library" OFF)
+option(CXXOPTS_ENABLE_ARG_FORMAT "Allow custom formats for implicit values" OFF)
 
 if (CXXOPTS_STANDALONE_PROJECT)
     cxxopts_set_cxx_standard()
@@ -80,4 +81,9 @@ endif()
 if (CXXOPTS_BUILD_TESTS)
     enable_testing()
     add_subdirectory(test)
+endif()
+
+if (CXXOPTS_ENABLE_ARG_FORMAT)
+    target_compile_features(cxxopts INTERFACE cxx_std_20)
+    target_compile_definitions(cxxopts INTERFACE CXXOPTS_ENABLE_ARG_FORMAT)
 endif()

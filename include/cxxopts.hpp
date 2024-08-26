@@ -43,6 +43,10 @@ THE SOFTWARE.
 #include <algorithm>
 #include <locale>
 
+#ifdef CXXOPTS_ENABLE_ARG_FORMAT
+#include <format>
+#endif
+
 #ifdef CXXOPTS_NO_EXCEPTIONS
 #include <iostream>
 #endif
@@ -404,6 +408,14 @@ class Value : public std::enable_shared_from_this<Value>
 
   virtual bool
   is_boolean() const = 0;
+
+#ifdef CXXOPTS_ENABLE_ARG_FORMAT
+  virtual std::string
+  get_arg_format() const = 0;
+
+  virtual std::shared_ptr<Value>
+  arg_format(const std::string& value) = 0;
+#endif
 };
 
 CXXOPTS_DIAGNOSTIC_POP
@@ -1247,6 +1259,21 @@ class abstract_value : public Value
     return std::is_same<T, bool>::value;
   }
 
+#ifdef CXXOPTS_ENABLE_ARG_FORMAT
+  std::string
+  get_arg_format() const override
+  {
+    return m_arg_format;
+  }
+
+  std::shared_ptr<Value>
+  arg_format(const std::string& value) override
+  {
+    m_arg_format = value;
+    return shared_from_this();
+  }
+#endif
+
   const T&
   get() const
   {
@@ -1266,6 +1293,9 @@ class abstract_value : public Value
 
   std::string m_default_value{};
   std::string m_implicit_value{};
+#ifdef CXXOPTS_ENABLE_ARG_FORMAT
+  std::string m_arg_format{};
+#endif
 };
 
 template <typename T>
@@ -1449,6 +1479,9 @@ struct HelpOptionDetails
   std::string arg_help;
   bool is_container;
   bool is_boolean;
+#ifdef CXXOPTS_ENABLE_ARG_FORMAT
+  std::string arg_format;
+#endif
 };
 
 struct HelpGroupDetails
@@ -2144,7 +2177,12 @@ format_option
   {
     if (o.has_implicit)
     {
-      result += " [=" + arg + "(=" + toLocalString(o.implicit_value) + ")]";
+#ifdef CXXOPTS_ENABLE_ARG_FORMAT
+      if (!o.arg_format.empty())
+        result += " " + std::vformat(o.arg_format, std::make_format_args(arg, toLocalString(o.implicit_value)));
+      else
+#endif
+        result += " [=" + arg + "(=" + toLocalString(o.implicit_value) + ")]";
     }
     else
     {
@@ -2729,7 +2767,11 @@ Options::add_option
       value->has_implicit(), value->get_implicit_value(),
       std::move(arg_help),
       value->is_container(),
-      value->is_boolean()});
+      value->is_boolean()
+#ifdef CXXOPTS_ENABLE_ARG_FORMAT
+      ,value->get_arg_format()
+#endif
+  });
 }
 
 inline

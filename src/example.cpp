@@ -52,6 +52,12 @@ parse(int argc, const char* argv[])
       ("i,input", "Input", cxxopts::value<std::string>())
       ("o,output", "Output file", cxxopts::value<std::string>()
           ->default_value("a.out")->implicit_value("b.def"), "BIN")
+#if __cplusplus >= 202002L
+      ("formatted_option", "Option with implicit value and custom format", cxxopts::value<std::string>()->implicit_value("abcd")->arg_format("[{}]={}"), "arg_help")
+      ("formatted_option2", "Another option with implicit value and custom format", cxxopts::value<std::string>()->implicit_value("abcd")->arg_format("[{}={}]"), "arg_help")
+      ("formatted_option3", "One more option with implicit value and custom format", cxxopts::value<std::string>()->implicit_value("abcd")->arg_format("[{} = {}]"), "arg_help")
+      ("no_implicit", "Same as formatted_option but no implicit value", cxxopts::value<std::string>()->arg_format("[{}]={}"), "arg_help")
+#endif
       ("x", "A short-only option", cxxopts::value<std::string>())
       ("positional",
         "Positional arguments: these are the arguments that are entered "
