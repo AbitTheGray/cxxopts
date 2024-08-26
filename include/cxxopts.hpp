@@ -2144,7 +2144,7 @@ format_option
   {
     if (o.has_implicit)
     {
-      result += " [=" + arg + "(=" + toLocalString(o.implicit_value) + ")]";
+      result += " [" + arg + "=" + toLocalString(o.implicit_value) + "]";
     }
     else
     {

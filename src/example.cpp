@@ -52,6 +52,8 @@ parse(int argc, const char* argv[])
       ("i,input", "Input", cxxopts::value<std::string>())
       ("o,output", "Output file", cxxopts::value<std::string>()
           ->default_value("a.out")->implicit_value("b.def"), "BIN")
+      ("default_help_implicit", "Implicit value with default arg_help value", cxxopts::value<std::string>()
+          ->default_value("a.out")->implicit_value("b.def"))
       ("x", "A short-only option", cxxopts::value<std::string>())
       ("positional",
         "Positional arguments: these are the arguments that are entered "
